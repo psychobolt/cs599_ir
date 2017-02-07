@@ -1,0 +1,45 @@
+[{
+  "id": 1,
+  "user": "Sammy",
+  "ratings": {
+    "data": [{
+      "title": "Starship Trooper",
+      "rating": 3
+    }, {
+      "title": "Sleepless in Seattle",
+      "rating": 4
+    },  {
+      "title": "MI-2",
+      "rating": 3
+    }],
+    "test": [{
+      "title": "Matrix",
+      "rating": "3"
+    }, {
+      "title": "Titanic",
+      "rating": "2"
+    }]
+  }
+}, {
+  "id": 6,
+  "user": "Basil",
+  "ratings": {
+    "data": [{
+      "title": "Starship Trooper",
+      "rating": 5
+    }, {
+      "title": "Sleepless in Seattle",
+      "rating": 1
+    },  {
+      "title": "MI-2",
+      "rating": 5
+    }],
+    "test": [{
+      "title": "Matrix",
+      "rating": "3"
+    }, {
+      "title": "Titanic",
+      "rating": "3"
+    }]
+  }
+}]
