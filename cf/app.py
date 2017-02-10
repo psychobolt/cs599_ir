@@ -8,7 +8,7 @@ PATH = os.path.dirname(__file__)
 OUTPUT_DIR = f'{PATH}/output'
 TEST_DATA_FILEPATH = f'{PATH}/data/test.json'
 TRAINING_DATA_FILEPATH = f'{PATH}/data/training.json'
-PREDICTIONS_DATA_FILEPATH = f'{OUTPUT_DIR}/predictions.json'
+PREDICTIONS_DATA_FILEPATH = f'{OUTPUT_DIR}/prediction.json'
 EVAL_DATA_FILEPATH = f'{OUTPUT_DIR}/eval.json'
 Vector = List[float]
 
@@ -54,16 +54,15 @@ def avg(items: List, titles: List[str]) -> float:
 
 
 def pearson(
-        user: Dict,
+        userId,
         category: str,
         items: List[Dict],
         neighbors: List[Dict],
         avgRatings={}) -> Dict:
     """
-    Returns the Pearson Correlations between a user specified category-item
-    ratings and its neighbor's
+    Returns the Pearson Correlations between each user specified category-item
+    rating and its corresponding neighbor's rating
     """
-    userId = user['id'] or user['name']
     titles = [item['title'] for item in items]
     if (userId in avgRatings):
         avgRating = avgRatings[userId]
@@ -97,6 +96,29 @@ def getRating(items: Dict, title: str):
             return data['rating']
     return None
 
+
+def predict(
+        userId,
+        category: str,
+        title: str,
+        avgRatings: Dict,
+        neighbors: List[Dict],
+        correlations: Dict) -> float:
+    """
+    Returns the rating prediction for a user's category-item
+    """
+    numerator = 0
+    for neighbor in neighbors:
+        rating = getRating(neighbor['ratings'][category], title)
+        if rating == None:
+            return None
+        neighborId = neighbor['id'] or neighbor['name']
+        numerator += correlations[category][neighborId] * \
+            (rating - avgRatings[neighborId])
+    return numerator / sum(abs(v) for v in correlations[category].values()) \
+        + avgRatings[userId]
+
+
 # Create empty output directory if it doesn't exist
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
@@ -109,6 +131,26 @@ with open(TEST_DATA_FILEPATH, 'r') as testFile:
 with open(TRAINING_DATA_FILEPATH, 'r') as trainingFile:
     TRAINING_DATA = json.load(trainingFile)
 
+# Build inventories
+inventories = {}
+for user in TRAINING_DATA:
+    ratings = user['ratings']
+    for category, items in ratings.items():
+        inventory = set()
+        inventories[category] = inventory
+        for item in items:
+            inventory.add(item['title'])
+
+# Remove title from a inventory if user did not rate it
+for user in TRAINING_DATA:
+    ratings = user['ratings']
+    for category, items in ratings.items():
+        inventory = inventories[category]
+        titles = [item['title'] for item in items]
+        for title in inventory.copy():
+            if title not in titles:
+                inventory.remove(title)
+
 results = []
 for user in TEST_DATA:
     ratings = user['ratings']
@@ -119,8 +161,9 @@ for user in TEST_DATA:
 
     for category, items in ratings.items():
         # Compute the Pearson Correlations
+        items = [item for item in items if item['title'] in inventories[category]]
         avgRatings = {}
-        correlations[category] = pearson(user, category, items,
+        correlations[category] = pearson(userId, category, items,
                                          TRAINING_DATA, avgRatings)
 
     for category, items in observed.items():
@@ -130,14 +173,10 @@ for user in TEST_DATA:
 
         for item in items:
             title = item['title']
-            numerator = 0
-            for neighbor in TRAINING_DATA:
-                neighborId = neighbor['id'] or neighbor['name']
-                numerator += correlations[category][neighborId] * (
-                    getRating(neighbor['ratings'][category], title) - avgRatings[neighborId])
             prediction.append({
                 'title': title,
-                'rating': numerator / sum(abs(v) for v in correlations[category].values()) + avgRatings[userId]
+                'rating': predict(userId, category, title, avgRatings,
+                                  TRAINING_DATA, correlations)
             })
 
     results.append({
@@ -166,8 +205,15 @@ rmse = math.sqrt(sumproduct / count)
 
 
 # Store predictions
-with open(PREDICTIONS_DATA_FILEPATH, 'w+') as predictionsFile:
+with open(PREDICTIONS_DATA_FILEPATH, 'w') as predictionsFile:
     json.dump(results, predictionsFile, indent=2)
+
+# Store evaluations
+with open(EVAL_DATA_FILEPATH, 'w') as evalFile:
+    json.dump({
+        'mae': mae,
+        'rmse': rmse
+    }, evalFile, indent=2)
 
 print("""\
 
