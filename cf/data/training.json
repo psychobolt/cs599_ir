@@ -1,77 +1,85 @@
 [{
   "id": 2,
-  "user": "Beatrice",
-  "ratings": [{
-    "title": "Starship Trooper",
-    "rating": 3
-  }, {
-    "title": "Sleepless in Seattle",
-    "rating": 4
-  },  {
-    "title": "MI-2",
-    "rating": 3
-  }, {
-    "title": "Matrix",
-    "rating": 1
-  }, {
-    "title": "Titanic",
-    "rating": 1
-  }]
+  "name": "Beatrice",
+  "ratings": {
+    "movies" : [{
+      "title": "Starship Trooper",
+      "rating": 3
+    }, {
+      "title": "Sleepless in Seattle",
+      "rating": 4
+    },  {
+      "title": "MI-2",
+      "rating": 3
+    }, {
+      "title": "Matrix",
+      "rating": 1
+    }, {
+      "title": "Titanic",
+      "rating": 1
+    }]
+  }
 }, {
   "id": 3,
-  "user": "Dylan",
-  "ratings": [{
-    "title": "Starship Trooper",
-    "rating": 3
-  }, {
-    "title": "Sleepless in Seattle",
-    "rating": 4
-  },  {
-    "title": "MI-2",
-    "rating": 3
-  }, {
-    "title": "Matrix",
-    "rating": 3
-  }, {
-    "title": "Titanic",
-    "rating": 4
-  }]
+  "name": "Dylan",
+  "ratings": {
+    "movies": [{
+      "title": "Starship Trooper",
+      "rating": 3
+    }, {
+      "title": "Sleepless in Seattle",
+      "rating": 4
+    },  {
+      "title": "MI-2",
+      "rating": 3
+    }, {
+      "title": "Matrix",
+      "rating": 3
+    }, {
+      "title": "Titanic",
+      "rating": 4
+    }]
+  }
 }, {
   "id": 4,
   "user": "Mathew",
-  "ratings": [{
-    "title": "Starship Trooper",
-    "rating": 4
-  }, {
-    "title": "Sleepless in Seattle",
-    "rating": 2
-  },  {
-    "title": "MI-2",
-    "rating": 3
-  }, {
-    "title": "Matrix",
-    "rating": 2
-  }, {
-    "title": "Titanic",
-    "rating": 5
-  }]
+  "ratings": {
+    "movies": [{
+      "title": "Starship Trooper",
+      "rating": 4
+    }, {
+      "title": "Sleepless in Seattle",
+      "rating": 2
+    },  {
+      "title": "MI-2",
+      "rating": 3
+    }, {
+      "title": "Matrix",
+      "rating": 2
+    }, {
+      "title": "Titanic",
+      "rating": 5
+    }]
+  }
 }, {
   "id": 5,
-  "user": "John",
-  "ratings": [{
-    "title": "Starship Trooper",
-    "rating": 4
-  }, {
-    "title": "Sleepless in Seattle",
-    "rating": 3
-  },  {
-    "title": "MI-2",
-    "rating": 4
-  }, {
-    "title": "Matrix",
-    "rating": 4
-  }, {
-    "title": "Titanic",
-    "rating": 4
-  }]
+  "name": "John",
+  "ratings": {
+    "movies": [{
+      "title": "Starship Trooper",
+      "rating": 4
+    }, {
+      "title": "Sleepless in Seattle",
+      "rating": 3
+    },  {
+      "title": "MI-2",
+      "rating": 4
+    }, {
+      "title": "Matrix",
+      "rating": 4
+    }, {
+      "title": "Titanic",
+      "rating": 4
+    }]
+  }
 }]

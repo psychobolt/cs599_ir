@@ -1,8 +1,8 @@
 [{
   "id": 1,
-  "user": "Sammy",
+  "name": "Sammy",
   "ratings": {
-    "data": [{
+    "movies": [{
       "title": "Starship Trooper",
       "rating": 3
     }, {
@@ -11,20 +11,22 @@
     },  {
       "title": "MI-2",
       "rating": 3
-    }],
-    "test": [{
+    }]
+  },
+  "observed": {
+    "movies" : [{
       "title": "Matrix",
-      "rating": "3"
+      "rating": 4
     }, {
       "title": "Titanic",
-      "rating": "2"
+      "rating": 3
     }]
   }
 }, {
   "id": 6,
-  "user": "Basil",
+  "name": "Basil",
   "ratings": {
-    "data": [{
+    "movies": [{
       "title": "Starship Trooper",
       "rating": 5
     }, {
@@ -33,13 +35,15 @@
     },  {
       "title": "MI-2",
       "rating": 5
-    }],
-    "test": [{
+    }]
+  },
+  "observed": {
+    "movies": [{
       "title": "Matrix",
-      "rating": "3"
+      "rating": 2
     }, {
       "title": "Titanic",
-      "rating": "3"
+      "rating": 5
     }]
   }
 }]
