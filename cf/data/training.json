@@ -42,7 +42,7 @@
   }
 }, {
   "id": 4,
-  "user": "Mathew",
+  "name": "Mathew",
   "ratings": {
     "movies": [{
       "title": "Starship Trooper",

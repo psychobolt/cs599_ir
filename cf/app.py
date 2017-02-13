@@ -24,7 +24,7 @@ def dot(A: Vector, B: Vector) -> float:
 
 def norm(A: Vector) -> float:
     """
-    Returns the Norm between two vectors
+    Returns the Norm of a vector
     """
     return math.sqrt(sum(a * a for a in A))
 
@@ -53,38 +53,24 @@ def avg(items: List, titles: List[str]) -> float:
     return total / n
 
 
-def pearson(
-        userId,
-        category: str,
-        items: List[Dict],
-        neighbors: List[Dict],
-        avgRatings={}) -> Dict:
+def pearson(testVec: Vector, category, neighbor, avgRatings):
     """
-    Returns the Pearson Correlations between each user specified category-item
-    rating and its corresponding neighbor's rating
+    Compute the Pearson Correlation using each category-item ratings 
+    from the test user and its neighbor respectively
     """
-    titles = [item['title'] for item in items]
-    if (userId in avgRatings):
-        avgRating = avgRatings[userId]
+    vecA = testVec
+    items = neighbor['ratings'][category]
+    if len(item) == 0:
+        return None
+    neighborId = neighbor['id'] or neighbor['name']
+    if (neighborId in avgRatings):
+        avgRating = avgRatings[neighborId]
     else:
         avgRating = avg(items, titles)
-        avgRatings[userId] = avgRating
-    vecA = [item['rating'] - avgRating for item in items]
-    correlations = {}
-
-    for neighbors in neighbors:
-        items = neighbors['ratings'][category]
-        if items:
-            neighborId = neighbors['id'] or neighbors['name']
-            if (neighborId in avgRatings):
-                avgRating = avgRatings[neighborId]
-            else:
-                avgRating = avg(items, titles)
-                avgRatings[neighborId] = avgRating
-            vecB = [item['rating'] -
-                    avgRating for item in items if item['title'] in titles]
-            correlations[neighborId] = cosSim(vecA, vecB)
-    return correlations
+        avgRatings[neighborId] = avgRating
+    vecB = [item['rating'] -
+            avgRating for item in items if item['title'] in titles]
+    return cosSim(vecA, vecB)
 
 
 def getRating(items: Dict, title: str):
@@ -156,28 +142,52 @@ for user in TEST_DATA:
     ratings = user['ratings']
     observed = user['observed']
     userId = user['id'] or user['name']
+    userName = user['name'] or user['id']
     correlations = {}
     predictions = {}
 
+    print('\nPearson Correlation of {} and:'.format(userName))
     for category, items in ratings.items():
-        # Compute the Pearson Correlations
-        items = [item for item in items if item['title'] in inventories[category]]
+        items = [item for item in items if item[
+            'title'] in inventories[category]]
+        titles = [item['title'] for item in items]
         avgRatings = {}
-        correlations[category] = pearson(userId, category, items,
-                                         TRAINING_DATA, avgRatings)
+        correlation = {}
+        if (userId in avgRatings):
+            avgRating = avgRatings[userId]
+        else:
+            avgRating = avg(items, titles)
+            avgRatings[userId] = avgRating
+        testVec = [item['rating'] - avgRating for item in items]
+
+        # Compute the Pearson Correlation for each neighbor
+        for neighbor in TRAINING_DATA:
+            r = pearson(testVec, category, neighbor, avgRatings)
+            # Print result
+            if (r != None):
+                print("{:>11} ({}): {: f}".format(
+                    neighbor['name'] or neighbor['id'], category, r))
+            correlation[neighbor['id'] or neighbor['name']] = r
+        correlations[category] = correlation
+    if len(ratings.items()) == 0:
+        print("None")
 
     for category, items in observed.items():
         # Predict user ratings from observed test data using correlations
+        print('\nPredictions for {}:'.format(userName))
         prediction = []
         predictions[category] = prediction
 
         for item in items:
             title = item['title']
+            rating = predict(userId, category, title, avgRatings,
+                                  TRAINING_DATA, correlations)
             prediction.append({
                 'title': title,
-                'rating': predict(userId, category, title, avgRatings,
-                                  TRAINING_DATA, correlations)
+                'rating': rating
             })
+            # Print the prediction
+            print('{:>11}: {:f}'.format(title, rating))
 
     results.append({
         'id': user['id'],
@@ -203,7 +213,6 @@ for i, user in enumerate(TEST_DATA):
 mae = summation / count
 rmse = math.sqrt(sumproduct / count)
 
-
 # Store predictions
 with open(PREDICTIONS_DATA_FILEPATH, 'w') as predictionsFile:
     json.dump(results, predictionsFile, indent=2)
@@ -215,11 +224,9 @@ with open(EVAL_DATA_FILEPATH, 'w') as evalFile:
         'rmse': rmse
     }, evalFile, indent=2)
 
-print("""\
-
-Ratings have been predicted. Please see output/predictions.json
-
+# Print evaluations
+print("""
 Performance:
-        MAE: {}
-       RMSE: {}
+        MAE: {:f}
+       RMSE: {:f}
 """.format(mae, rmse))
