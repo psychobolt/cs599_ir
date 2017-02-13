@@ -165,7 +165,7 @@ for user in TEST_DATA:
             r = pearson(testVec, category, neighbor, avgRatings)
             # Print result
             if (r != None):
-                print("{:>11} ({}): {: f}".format(
+                print("{:>11} (Category: {}): {: f}".format(
                     neighbor['name'] or neighbor['id'], category, r))
             correlation[neighbor['id'] or neighbor['name']] = r
         correlations[category] = correlation
@@ -187,7 +187,7 @@ for user in TEST_DATA:
                 'rating': rating
             })
             # Print the prediction
-            print('{:>11}: {:f}'.format(title, rating))
+            print('{:>11} (Category: {}): {:f}'.format(title, category, rating))
 
     results.append({
         'id': user['id'],
