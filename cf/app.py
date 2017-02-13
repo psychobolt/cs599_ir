@@ -4,7 +4,7 @@ import math
 from typing import List, Dict
 
 
-PATH = os.path.dirname(__file__)
+PATH = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = f'{PATH}/output'
 TEST_DATA_FILEPATH = f'{PATH}/data/test.json'
 TRAINING_DATA_FILEPATH = f'{PATH}/data/training.json'
